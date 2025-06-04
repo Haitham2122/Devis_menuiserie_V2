@@ -193,7 +193,7 @@ class PDFProcessor:
         
         return None
     
-    def creer_tableau_recapitulatif(self, page, montants, y_position,accompt1,accompt2,solde):
+    def creer_tableau_recapitulatif(self, page, montants, y_position,accompt1,accompt2,solde,tva):
         """Crée le nouveau tableau de récapitulatif"""
         if not montants:
             return
@@ -214,7 +214,7 @@ class PDFProcessor:
         couleur_rouge = (0.8, 0, 0)
         
         # 1. Section Règlement
-        total_TVA = montants.get('total_ht', 0)*0.055
+        total_TVA = montants.get('total_ht', 0)*tva
         total_ht = montants.get('total_ht')
         total_ttc=total_TVA+total_ht
 
@@ -313,7 +313,8 @@ def personnaliser_devis_pdf(
     solde=0.5,
     Date="04/06/2025",
     numero_devis=344333,
-    code_client=7658765
+    code_client=7658765,
+    tva=0.055
 ):
     processor = PDFProcessor()
     logo_quali = "quali.png"
@@ -370,7 +371,7 @@ def personnaliser_devis_pdf(
     #page1.insert_text((32, 110), "Fenêtre sur le monde", fontsize=14, fontname="Helvetica-Bold", color=(0, 0, 0))
     page1.insert_text((32, 135), "885 BOULEVARD DES PRINCES", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 150), "06210 MANDELIEU-LA-NAPOULE", fontsize=10, fontname="Helvetica-Bold")
-    page1.insert_text((32, 165), "Tél. : 06 51 17 39 39", fontsize=10, fontname="Helvetica-Bold")
+    page1.insert_text((32, 165), "Tél. : 06 50 79 75 37", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 180), "E-mail : contact@fenetremonde.com", fontsize=10, fontname="Helvetica-Bold")
     rect_info = fitz.Rect(30, 120, 570, 190)
     page1.draw_rect(rect_info, color=(0, 0, 0), width=1)
@@ -410,10 +411,10 @@ def personnaliser_devis_pdf(
         
         # Créer le nouveau tableau
         y_position = zone_a_supprimer.y0 + 10
-        processor.creer_tableau_recapitulatif(last_page, montants, y_position,accompte1,accompte2,solde)
+        processor.creer_tableau_recapitulatif(last_page, montants, y_position,accompte1,accompte2,solde,tva)
     else:
         print("⚠️ Zone de suppression non trouvée, création du tableau en bas de page")
-        processor.creer_tableau_recapitulatif(last_page, montants, 500,accompte1,accompte2,solde)
+        processor.creer_tableau_recapitulatif(last_page, montants, 500,accompte1,accompte2,solde,tva)
     
     # Enregistrement
     doc.save(output_pdf_path)

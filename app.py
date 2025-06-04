@@ -10,6 +10,7 @@ from datetime import datetime
 from devismodif import personnaliser_devis_pdf
 import shutil
 from societes_manager import societes_manager
+import re
 
 app = FastAPI(
     title="Processeur de Devis PDF", 
@@ -934,6 +935,31 @@ async def interface_principale():
                         </div>
                     </div>
 
+                    <!-- TVA Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="section-title">Taux de TVA</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Sélectionner le taux de TVA</label>
+                            <select class="form-select" name="tva" required>
+                                <option value="0.055">5.5% - Travaux de rénovation énergétique</option>
+                                <option value="0.00">0% - Exonération de TVA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-text">
+                                <i class="fas fa-info-circle"></i>
+                                La TVA à 5.5% s'applique aux travaux de rénovation énergétique éligibles
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="submit-button">
                         <i class="fas fa-magic"></i>
                         Générer le Devis Complet
@@ -1076,10 +1102,31 @@ async def interface_principale():
                         const blob = await response.blob();
                         const url = window.URL.createObjectURL(blob);
                         const downloadLink = document.getElementById('downloadLink');
-                        const numeroDevis = document.querySelector('[name="numero_devis"]').value;
+                        
+                        // Générer le nom de fichier basé sur le client et la date
+                        const nomClient = document.querySelector('[name="nom_client"]').value;
+                        const dateDevis = document.querySelector('[name="date"]').value;
+                        
+                        // Fonction pour nettoyer le nom du client (similaire au backend)
+                        function cleanFilename(text) {
+                            let cleaned = text.replace(/[<>:"/\\|?*]/g, ''); // Caractères interdits
+                            cleaned = cleaned.replace(/[àáâãäå]/gi, 'a');
+                            cleaned = cleaned.replace(/[èéêë]/gi, 'e');
+                            cleaned = cleaned.replace(/[ìíîï]/gi, 'i');
+                            cleaned = cleaned.replace(/[òóôõö]/gi, 'o');
+                            cleaned = cleaned.replace(/[ùúûü]/gi, 'u');
+                            cleaned = cleaned.replace(/[ç]/gi, 'c');
+                            cleaned = cleaned.replace(/[ñ]/gi, 'n');
+                            cleaned = cleaned.replace(/\s+/g, '_'); // Espaces par underscore
+                            cleaned = cleaned.replace(/[^a-zA-Z0-9_.-]/g, ''); // Caractères autorisés seulement
+                            return cleaned.substring(0, 50); // Limiter longueur
+                        }
+                        
+                        const clientClean = cleanFilename(nomClient);
+                        const filename = `devis_complet_${clientClean}_${dateDevis}.pdf`;
                         
                         downloadLink.href = url;
-                        downloadLink.download = `devis_complet_${numeroDevis}.pdf`;
+                        downloadLink.download = filename;
                         
                         hideAllStatusCards();
                         document.getElementById('successCard').style.display = 'block';
@@ -1119,7 +1166,8 @@ async def generer_devis(
     code_client: int = Form(...),
     accompte1: float = Form(...),
     accompte2: float = Form(...),
-    solde: float = Form(...)
+    solde: float = Form(...),
+    tva: float = Form(...)
 ):
     """Génère un devis PDF personnalisé"""
     
@@ -1159,26 +1207,29 @@ async def generer_devis(
                 from create_default_logo import create_default_logos
                 create_default_logos()
             
-            # Chemin de sortie
-            output_filename = f"devis_personnalise_{numero_devis}.pdf"
-            output_path = os.path.join(temp_dir, output_filename)
-            
-            # Convertir les pourcentages en décimales
-            accompte1_decimal = accompte1 / 100
-            accompte2_decimal = accompte2 / 100
-            solde_decimal = solde / 100
-            
             # Formater les dates
             try:
                 date_formatted = datetime.strptime(date, '%Y-%m-%d').strftime('%d/%m/%Y')
+                date_for_filename = datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d')
                 # Utiliser les dates de la société
                 date_attribution_formatted = datetime.strptime(societe['date_attribution'], '%Y-%m-%d').strftime('%d/%m/%Y')
                 date_validite_formatted = datetime.strptime(societe['date_validite'], '%Y-%m-%d').strftime('%d/%m/%Y')
             except ValueError:
                 # Si le format est déjà bon
                 date_formatted = date
+                date_for_filename = date
                 date_attribution_formatted = societe['date_attribution']
                 date_validite_formatted = societe['date_validite']
+            
+            # Créer un nom de fichier basé sur le client et la date
+            client_clean = clean_filename(nom_client)
+            output_filename = f"devis_{client_clean}_{date_for_filename}.pdf"
+            output_path = os.path.join(temp_dir, output_filename)
+            
+            # Convertir les pourcentages en décimales
+            accompte1_decimal = accompte1 / 100
+            accompte2_decimal = accompte2 / 100
+            solde_decimal = solde / 100
             
             # Appeler la fonction de traitement PDF avec les données de la société
             montants = personnaliser_devis_pdf(
@@ -1199,7 +1250,8 @@ async def generer_devis(
                 solde=solde_decimal,
                 Date=date_formatted,
                 numero_devis=numero_devis,
-                code_client=code_client
+                code_client=code_client,
+                tva=tva
             )
             
             # Vérifier que le fichier a été créé
@@ -1210,7 +1262,9 @@ async def generer_devis(
             conditions_generales_path = "Conditions_Generales_FENETRE_SUR_LE_MONDE.pdf"
             if os.path.exists(conditions_generales_path):
                 print("📄 Ajout des conditions générales de vente...")
-                combined_output_path = os.path.join(temp_dir, f"devis_complet_{numero_devis}.pdf")
+                # Nom du fichier complet avec client et date
+                combined_filename = f"devis_complet_{client_clean}_{date_for_filename}.pdf"
+                combined_output_path = os.path.join(temp_dir, combined_filename)
                 
                 try:
                     import fitz  # PyMuPDF
@@ -1232,7 +1286,7 @@ async def generer_devis(
                     
                     # Utiliser le fichier combiné
                     output_path = combined_output_path
-                    output_filename = f"devis_complet_{numero_devis}.pdf"
+                    output_filename = combined_filename
                     
                     print("✅ Conditions générales ajoutées avec succès")
                     
@@ -1259,6 +1313,21 @@ async def generer_devis(
     except Exception as e:
         print(f"Erreur lors de la génération : {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération : {str(e)}")
+
+def clean_filename(text):
+    """Nettoie un texte pour qu'il soit utilisable comme nom de fichier"""
+    # Supprimer/remplacer les caractères spéciaux
+    cleaned = re.sub(r'[<>:"/\\|?*]', '', text)  # Caractères interdits Windows
+    cleaned = re.sub(r'[àáâãäå]', 'a', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[èéêë]', 'e', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[ìíîï]', 'i', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[òóôõö]', 'o', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[ùúûü]', 'u', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[ç]', 'c', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'[ñ]', 'n', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\s+', '_', cleaned)  # Remplacer espaces par underscore
+    cleaned = re.sub(r'[^a-zA-Z0-9_.-]', '', cleaned)  # Garder seulement alphanumériques et certains caractères
+    return cleaned[:50]  # Limiter la longueur
 
 if __name__ == "__main__":
     # Configuration pour le développement local
