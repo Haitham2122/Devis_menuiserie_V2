@@ -251,7 +251,7 @@ class PDFProcessor:
         rect_ttc = fitz.Rect(x_totaux, y_current + 50, x_droite, y_current + 80)
         page.draw_rect(rect_ttc, fill=couleur_gris_fonce)
         page.insert_text((x_totaux + 5, y_current + 65), "Total TTC :", fontsize=12, fontname="Helvetica-Bold")
-        page.insert_text((x_totaux + 120, y_current + 65), f"{total_TVA+total_ht:.2f} \x80", fontsize=12, fontname="Helvetica-Bold", color=couleur_rouge)
+        page.insert_text((x_totaux + 120, y_current + 65), f"{total_TVA+total_ht:.2f} \x80", fontsize=12, fontname="Helvetica-Bold")
         
         y_current += 90
         
