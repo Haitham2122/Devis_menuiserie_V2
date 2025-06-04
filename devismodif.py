@@ -270,9 +270,9 @@ class PDFProcessor:
         rect_bancaire = fitz.Rect(x_gauche, y_current, x_droite, y_current + 35)
         page.draw_rect(rect_bancaire, color=couleur_noir, width=1)
         
-        page.insert_text((x_gauche + 5, y_current + 15), "COORDONNÉES BANCAIRES : CR NORD DE FRANCE", 
+        page.insert_text((x_gauche + 5, y_current + 15), "COORDONNÉES BANCAIRES : CREDIT AGRICOLE CENTRE-EST ", 
                         fontsize=10, fontname="Helvetica-Bold")
-        page.insert_text((x_gauche + 5, y_current + 30), "IBAN : FR76 1670 6000 6053 9267 1036 936 - BIC : AGRIFRPP867", 
+        page.insert_text((x_gauche + 5, y_current + 30), "IBAN : FR76 1780 6002 9904 2140 3558 386  - BIC AGRIFRPP878", 
                         fontsize=9, fontname="Helvetica")
         
         y_current += 40
@@ -371,7 +371,7 @@ def personnaliser_devis_pdf(
     page1.insert_text((32, 135), "885 BOULEVARD DES PRINCES", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 150), "06210 MANDELIEU-LA-NAPOULE", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 165), "Tél. : 06 51 17 39 39", fontsize=10, fontname="Helvetica-Bold")
-    page1.insert_text((32, 180), "E-mail : fenetresurlemonde@gmail.com", fontsize=10, fontname="Helvetica-Bold")
+    page1.insert_text((32, 180), "E-mail : contact@fenetremonde.com", fontsize=10, fontname="Helvetica-Bold")
     rect_info = fitz.Rect(30, 120, 570, 190)
     page1.draw_rect(rect_info, color=(0, 0, 0), width=1)
     # Infos client
