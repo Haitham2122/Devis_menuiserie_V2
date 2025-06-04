@@ -24,7 +24,7 @@ class PDFProcessor:
                     montant_str = self.nettoyer_montant(montant_line)
                     if montant_str:
                         montants['total_ht'] = float(montant_str)
-                        print(f"✅ Total HT détecté : {montants['total_ht']:.2f} EUR")
+                        print(f"✅ Total HT détecté : {montants['total_ht']:.2f} \x80")
                     break
             
             # Recherche de la TVA
@@ -44,7 +44,7 @@ class PDFProcessor:
                     montant_str = self.nettoyer_montant(montant_line)
                     if montant_str:
                         montants['montant_tva'] = float(montant_str)
-                        print(f"✅ TVA ({montants.get('taux_tva', 0)}%) détectée : {montants['montant_tva']:.2f} EUR")
+                        print(f"✅ TVA ({montants.get('taux_tva', 0)}%) détectée : {montants['montant_tva']:.2f} \x80")
                     break
             
             # Recherche du Total TTC
@@ -57,7 +57,7 @@ class PDFProcessor:
                     montant_str = self.nettoyer_montant(montant_line)
                     if montant_str:
                         montants['total_ttc'] = float(montant_str)
-                        print(f"✅ Total TTC détecté : {montants['total_ttc']:.2f} EUR")
+                        print(f"✅ Total TTC détecté : {montants['total_ttc']:.2f} \x80")
                     break
             
             # Calcul des acomptes
@@ -223,9 +223,9 @@ class PDFProcessor:
         page.draw_rect(fitz.Rect(x_gauche, y_current, x_droite, y_current + 20), fill=couleur_gris_clair)
         
         page.insert_text((x_gauche + 5, y_current + 15), "Règlement :", fontsize=10, fontname="Helvetica-Bold")
-        page.insert_text((x_gauche + 5, y_current + 32), f"Acompte {accompt1*100}% : {total_ttc*accompt1:.2f} EUR", fontsize=9, fontname="Helvetica")
-        page.insert_text((x_gauche + 5, y_current + 45), f"Acompte {accompt2*100}% : {total_ttc*accompt2:.2f} EUR", fontsize=9, fontname="Helvetica")
-        page.insert_text((x_gauche + 5, y_current + 45+13), f"Acompte {solde*100}% : {total_ttc*solde:.2f} EUR", fontsize=9, fontname="Helvetica")
+        page.insert_text((x_gauche + 5, y_current + 32), f"Acompte {accompt1*100}% : {total_ttc*accompt1:.2f} \x80", fontsize=9, fontname="Helvetica")
+        page.insert_text((x_gauche + 5, y_current + 45), f"Acompte {accompt2*100}% : {total_ttc*accompt2:.2f} \x80", fontsize=9, fontname="Helvetica")
+        page.insert_text((x_gauche + 5, y_current + 45+13), f"Acompte {solde*100}% : {total_ttc*solde:.2f} \x80", fontsize=9, fontname="Helvetica")
 
         #TVA details
 
@@ -240,18 +240,18 @@ class PDFProcessor:
         # Total HT
         page.insert_text((x_totaux + 5, y_current + 15), "Total HT :", fontsize=10, fontname="Helvetica-Bold")
         
-        page.insert_text((x_totaux + 120, y_current + 15), f"{total_ht:.2f} EUR", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 120, y_current + 15), f"{total_ht:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
         
         # Total TVA
         page.insert_text((x_totaux + 5, y_current + 35), "Total TVA :", fontsize=10, fontname="Helvetica-Bold")
 
-        page.insert_text((x_totaux + 120, y_current + 35), f"{total_TVA:.2f} EUR", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 120, y_current + 35), f"{total_TVA:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
         
         # Total TTC
         rect_ttc = fitz.Rect(x_totaux, y_current + 50, x_droite, y_current + 80)
         page.draw_rect(rect_ttc, fill=couleur_gris_fonce)
         page.insert_text((x_totaux + 5, y_current + 65), "Total TTC :", fontsize=12, fontname="Helvetica-Bold")
-        page.insert_text((x_totaux + 120, y_current + 65), f"{total_TVA+total_ht:.2f} EUR", fontsize=12, fontname="Helvetica-Bold", color=couleur_rouge)
+        page.insert_text((x_totaux + 120, y_current + 65), f"{total_TVA+total_ht:.2f} \x80", fontsize=12, fontname="Helvetica-Bold", color=couleur_rouge)
         
         y_current += 90
         
