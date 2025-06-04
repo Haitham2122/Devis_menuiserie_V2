@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "nom": "FERMETURE SABOT",
+    "representant": "Boufedji selim",
+    "siret": "934 496 985",
+    "certificat_rge": "E-E210179",
+    "date_attribution": "2024-11-19",
+    "date_validite": "2025-06-16",
+    "date_creation": "2025-06-04T05:04:02.822380",
+    "actif": true
+  },
+  {
+    "id": 2,
+    "nom": "TEST SOCIÉTÉ COMPLÈTE",
+    "representant": "Jean Nouveau",
+    "siret": "111 222 333",
+    "certificat_rge": "RGE-2025",
+    "date_attribution": "2024-03-15",
+    "date_validite": "2025-08-20",
+    "date_creation": "2025-06-04T05:04:11.009716",
+    "actif": true
+  },
+  {
+    "id": 3,
+    "nom": "SOCIÉTÉ TEST MODIFIÉE",
+    "representant": "Jean Test Modifié",
+    "siret": "987 654 321",
+    "certificat_rge": "TEST-002",
+    "date_attribution": "2024-06-01",
+    "date_validite": "2026-01-15",
+    "date_creation": "2025-06-04T05:04:28.184884",
+    "actif": false,
+    "date_modification": "2025-06-04T05:04:32.246485",
+    "date_suppression": "2025-06-04T05:04:34.275109"
+  }
+]
