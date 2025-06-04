@@ -113,7 +113,7 @@ class PDFProcessor:
                         # Chercher le début
                         if "Total Accessoires:" in text or "Total calcule:" in text:
                             debut_trouve = True
-                            y_debut = span["bbox"][0]  # y0
+                            y_debut = span["bbox"][1]  # y0
                         
                         # Chercher la fin
                         if debut_trouve and ("SOLDE 20%" in text or "FIN DE CHANTIER" in text):
@@ -174,7 +174,7 @@ class PDFProcessor:
                 if debut_trouve:
                     break
         
-        if debut_trouve is not None:
+        if debut_trouve is not False:
             # Si on n'a pas trouvé la fin, prendre une zone par défaut
 
             
