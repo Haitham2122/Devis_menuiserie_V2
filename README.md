@@ -1,75 +1,46 @@
-# 🏠 Générateur de Devis PDF - Fenêtre sur le Monde
+# 🏢 Générateur de Devis Professionnel - Fenêtre sur le Monde
 
-Application web FastAPI pour personnaliser automatiquement des devis PDF avec une interface moderne et intuitive.
+## 📋 Description
 
-![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+Application web moderne de génération automatique de devis PDF personnalisés pour l'entreprise "Fenêtre sur le Monde". Interface minimaliste et professionnelle avec ajout automatique des conditions générales de vente.
 
 ## ✨ Fonctionnalités
 
-- 📄 **Upload de fichiers PDF** - Importez vos devis existants
-- 🎨 **Personnalisation automatique** - Modification du contenu et du design
-- 💼 **Informations client** - Gestion complète des données client
-- 🏢 **Informations société** - Configuration de votre entreprise
-- 💰 **Calcul automatique des acomptes** - Répartition personnalisable
-- 📱 **Interface responsive** - Compatible mobile et desktop
-- ⚡ **API REST** - Endpoints pour intégration
-- 🚀 **Déploiement Render** - Configuration optimisée
+### 🎨 **Interface Moderne**
+- Design minimaliste et professionnel
+- Interface responsive (mobile & desktop)
+- Palette de couleurs épurée
+- Animations fluides et feedback visuel
 
-## 🛠️ Technologies
+### 📄 **Génération de Devis**
+- Upload de PDF original
+- Personnalisation automatique avec données client
+- Ajout automatique du logo entreprise
+- **Ajout automatique des conditions générales**
+- Export PDF complet prêt à envoyer
 
-- **Backend**: FastAPI + Python 3.11
-- **PDF Processing**: PyMuPDF (fitz)
-- **Frontend**: Bootstrap 5 + Font Awesome
-- **Deployment**: Render.com
-- **File Upload**: python-multipart
+### 🏢 **Gestion des Sociétés**
+- CRUD complet des sociétés
+- Gestion des certificats RGE
+- Dates d'attribution et de validité
+- Interface dédiée de gestion
 
-## 🚀 Déploiement sur Render
+### 💰 **Modalités de Paiement**
+- Configuration flexible des acomptes
+- Calcul automatique des pourcentages
+- Validation temps réel (total = 100%)
 
-### 1. Préparation du Repository
+## 🚀 Installation
 
-Assurez-vous que tous les fichiers sont présents :
-- `app.py` - Application FastAPI
-- `devismodif.py` - Module de traitement PDF
-- `requirements.txt` - Dépendances Python
-- `Procfile` - Configuration Render
-- `runtime.txt` - Version Python
+### Prérequis
+- Python 3.8+
+- pip
 
-### 2. Création du Service sur Render
-
-1. **Connectez votre compte GitHub** à Render.com
-2. **Créez un nouveau Web Service**
-3. **Sélectionnez votre repository**
-4. **Configuration** :
-   ```
-   Name: devis-pdf-generator
-   Environment: Python 3
-   Region: Frankfurt (EU)
-   Branch: main
-   Build Command: pip install -r requirements.txt
-   Start Command: uvicorn app:app --host 0.0.0.0 --port $PORT
-   ```
-
-### 3. Variables d'Environnement (Optionnel)
-
-```bash
-PYTHON_VERSION=3.11.0
-```
-
-### 4. Déploiement
-
-Une fois configuré, Render déploiera automatiquement votre application.
-L'URL sera fournie dans le dashboard Render.
-
-## 💻 Développement Local
-
-### Installation
-
+### Installation locale
 ```bash
 # Cloner le repository
-git clone <votre-repo>
-cd devis-pdf-processor
+git clone https://github.com/Haitham2122/Devis_menuiserie_V2.git
+cd Devis_menuiserie_V2
 
 # Installer les dépendances
 pip install -r requirements.txt
@@ -78,129 +49,136 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### Accès Local
+### Accès
+- **Interface principale** : http://localhost:8000
+- **Gestion sociétés** : http://localhost:8000/societes
+- **Documentation API** : http://localhost:8000/docs
+
+## 📁 Structure du Projet
 
 ```
-http://localhost:8000
+devismodifierv4/
+├── app.py                                          # Application FastAPI principale
+├── devismodif.py                                   # Module de traitement PDF
+├── societes_manager.py                             # Gestionnaire des sociétés
+├── Conditions_Generales_FENETRE_SUR_LE_MONDE.pdf  # Conditions générales (auto-ajoutées)
+├── logo.png                                        # Logo entreprise
+├── requirements.txt                                # Dépendances Python
+├── tests/                                          # Tests unitaires
+│   ├── test_pdf_generation.py
+│   ├── test_conditions_generales.py
+│   └── test_interface_conditions.py
+└── docs/                                           # Documentation
+    ├── FONCTIONNALITE_CONDITIONS_GENERALES.md
+    └── RESUME_FINAL_CONDITIONS_GENERALES.md
 ```
 
-## 📚 API Documentation
+## 🔧 Technologies
 
-### Endpoints Principaux
+- **Backend** : FastAPI (Python)
+- **Frontend** : HTML5, CSS3, JavaScript (Vanilla)
+- **PDF** : PyMuPDF (Fitz)
+- **Design** : CSS Grid, Flexbox, Animations CSS
+- **Fonts** : Inter (Google Fonts)
 
-- `GET /` - Interface web principale
-- `POST /generer-devis` - Génération de devis PDF
-- `GET /health` - Status de l'application
-- `GET /docs` - Documentation Swagger automatique
+## 📊 Processus de Génération
 
-### Exemple d'utilisation API
+1. **Upload** : Téléchargement du PDF devis original
+2. **Configuration** : Saisie des informations client et société
+3. **Personnalisation** : Modification automatique du PDF
+4. **Ajout Logo** : Intégration automatique du logo entreprise
+5. **Conditions Générales** : Ajout automatique des CGV
+6. **Export** : Téléchargement du PDF complet
 
-```python
-import requests
+## 🎯 Fonctionnalités Automatiques
 
-files = {
-    'pdf_file': open('devis.pdf', 'rb'),
-    'logo_file': open('logo.png', 'rb')
-}
+### 📋 **Conditions Générales**
+- Détection automatique du fichier `Conditions_Generales_FENETRE_SUR_LE_MONDE.pdf`
+- Fusion transparente avec le devis personnalisé
+- Document final : Devis + Conditions générales
+- Gestion d'erreurs en cas de fichier manquant
 
-data = {
-    'nom_client': 'M. Jean Dupont',
-    'adresse_client': '12 Rue des Lilas',
-    'ville_client': '75000 Paris',
-    'numero_devis': 344333,
-    'accompte1': 20,
-    'accompte2': 30,
-    'solde': 50
-}
+### 🏢 **Logo Entreprise**
+- Ajout automatique du logo sur le devis
+- Positionnement intelligent
+- Redimensionnement automatique
 
-response = requests.post('http://localhost:8000/generer-devis', files=files, data=data)
-```
-
-## 🎯 Utilisation
-
-### Interface Web
-
-1. **Ouvrez l'application** dans votre navigateur
-2. **Uploadez votre PDF** de devis original
-3. **Ajoutez votre logo** (optionnel)
-4. **Remplissez les informations** :
-   - Client (nom, adresse, code)
-   - Société (pose, SIRET, RGE)
-   - Dates et numéros
-   - Répartition des acomptes
-5. **Cliquez sur "Générer"**
-6. **Téléchargez** le PDF personnalisé
-
-### Validation Automatique
-
-- ✅ Vérification du format PDF
-- ✅ Validation des pourcentages (total = 100%)
-- ✅ Contrôle des champs obligatoires
-- ✅ Gestion des erreurs avec messages explicites
-
-## 🔧 Configuration
-
-### Personnalisation
-
-Modifiez `devismodif.py` pour :
-- Changer les couleurs et styles
-- Modifier les informations par défaut
-- Ajuster les calculs de TVA
-- Personnaliser le layout
-
-### Logos
-
-Placez vos logos dans le dossier racine :
-- `logo.png` - Logo principal (par défaut)
-- `quali.png` - Logo qualification RGE
-
-## 📊 Monitoring
-
-L'endpoint `/health` permet de vérifier le status :
-
-```json
-{
-  "status": "healthy",
-  "service": "PDF Processor"
-}
-```
-
-## 🐛 Dépannage
-
-### Erreurs Courantes
-
-1. **Erreur PDF** : Vérifiez que le fichier est un PDF valide
-2. **Pourcentages** : La somme doit être égale à 100%
-3. **Logos manquants** : Placez les fichiers image dans le bon dossier
-4. **Timeout** : Les gros fichiers peuvent prendre plus de temps
-
-### Logs
-
-Les logs détaillés sont disponibles dans le dashboard Render ou via :
+## 🧪 Tests
 
 ```bash
-# Local
-python app.py
+# Test complet de génération PDF
+python test_pdf_generation.py
+
+# Test spécialisé conditions générales
+python test_conditions_generales.py
+
+# Test interface utilisateur
+python test_interface_conditions.py
 ```
 
-## 🤝 Contribution
+## 🌐 Déploiement
 
-1. Fork le projet
-2. Créez une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit vos changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créez une Pull Request
+### Render.com (Recommandé)
+1. Connecter le repository GitHub
+2. Configuration automatique détectée
+3. Variables d'environnement : aucune requise
+4. Déploiement automatique
 
-## 📄 License
+### Docker
+```dockerfile
+FROM python:3.9
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+```
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+## 📈 Avantages
 
-## 👨‍💻 Auteur
+| Fonctionnalité | Bénéfice |
+|----------------|----------|
+| **Design Minimaliste** | Interface professionnelle et moderne |
+| **Conditions Auto** | Documents légalement complets |
+| **Gestion Sociétés** | Centralisation des données entreprise |
+| **PDF Complet** | Un seul document pour le client |
+| **Interface Intuitive** | Facilité d'utilisation |
 
-**Fenêtre sur le Monde**
-- Email: fenetresurlemonde@gmail.com
-- Téléphone: 06 51 17 39 39
+## 🔒 Sécurité
+
+- Validation des fichiers uploadés
+- Gestion sécurisée des fichiers temporaires
+- Nettoyage automatique des ressources
+- Validation côté client et serveur
+
+## 👥 Utilisation
+
+### Pour l'Utilisateur
+1. Sélectionner un PDF de devis
+2. Remplir les informations client
+3. Choisir la société
+4. Configurer les modalités de paiement
+5. Générer et télécharger le PDF complet
+
+### Pour l'Administrateur
+1. Gérer les sociétés via `/societes`
+2. Mettre à jour les conditions générales
+3. Modifier le logo entreprise
+4. Consulter les logs et statistiques
+
+## 📞 Support
+
+- **Repository** : [GitHub](https://github.com/Haitham2122/Devis_menuiserie_V2)
+- **Issues** : Utiliser le système d'issues GitHub
+- **Documentation** : Voir dossier `/docs`
+
+## 🏆 Version
+
+**Version 4.0** - Application complète avec design minimaliste et fonctionnalités avancées
 
 ---
 
-⭐ **N'hésitez pas à mettre une étoile si ce projet vous aide !** 
+## 🎯 Entreprise : Fenêtre sur le Monde
+*Génération professionnelle de devis automatisée* ✨
+
+**Application prête pour production !** 🚀 
