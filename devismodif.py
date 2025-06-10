@@ -236,16 +236,18 @@ class PDFProcessor:
         x_totaux = x_droite - 200
         rect_totaux = fitz.Rect(x_totaux, y_current, x_droite, y_current + 80)
         page.draw_rect(rect_totaux, color=couleur_noir, width=1, fill=couleur_gris_clair)
-        
+
+
+        page.insert_text((x_totaux + 5, y_current + 12), "POSE COMPRISE", fontsize=10, fontname="Helvetica-Bold")
         # Total HT
-        page.insert_text((x_totaux + 5, y_current + 15), "Total HT :", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 5, y_current + 27), "Total HT :", fontsize=10, fontname="Helvetica-Bold")
         
-        page.insert_text((x_totaux + 120, y_current + 15), f"{total_ht:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 120, y_current + 27), f"{total_ht:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
         
         # Total TVA
-        page.insert_text((x_totaux + 5, y_current + 35), "Total TVA :", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 5, y_current + 42), "Total TVA :", fontsize=10, fontname="Helvetica-Bold")
 
-        page.insert_text((x_totaux + 120, y_current + 35), f"{total_TVA:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
+        page.insert_text((x_totaux + 120, y_current + 42), f"{total_TVA:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
         
         # Total TTC
         rect_ttc = fitz.Rect(x_totaux, y_current + 50, x_droite, y_current + 80)
