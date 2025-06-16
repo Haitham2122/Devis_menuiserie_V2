@@ -960,6 +960,28 @@ async def interface_principale():
                         </div>
                     </div>
 
+                    <!-- Forfait Pose Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="section-title">Forfait Pose</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Montant du forfait pose (€)</label>
+                            <input type="number" class="form-input" name="forfait_pose" value="2000" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-text">
+                                <i class="fas fa-info-circle"></i>
+                                Ce montant sera ajouté au total HT pour calculer le coût total avec la pose
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="submit-button">
                         <i class="fas fa-magic"></i>
                         Générer le Devis Complet
@@ -1167,7 +1189,8 @@ async def generer_devis(
     accompte1: float = Form(...),
     accompte2: float = Form(...),
     solde: float = Form(...),
-    tva: float = Form(...)
+    tva: float = Form(...),
+    forfait_pose: float = Form(...)
 ):
     """Génère un devis PDF personnalisé"""
     
@@ -1251,7 +1274,8 @@ async def generer_devis(
                 Date=date_formatted,
                 numero_devis=numero_devis,
                 code_client=code_client,
-                tva=tva
+                tva=tva,
+                forfait_pose=forfait_pose
             )
             
             # Vérifier que le fichier a été créé

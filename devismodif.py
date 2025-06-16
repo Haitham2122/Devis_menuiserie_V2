@@ -193,7 +193,7 @@ class PDFProcessor:
         
         return None
     
-    def creer_tableau_recapitulatif(self, page, montants, y_position,accompt1,accompt2,solde,tva):
+    def creer_tableau_recapitulatif(self, page, montants, y_position,accompt1,accompt2,solde,tva,forfait_pose):
         """Crée le nouveau tableau de récapitulatif"""
         if not montants:
             return
@@ -214,7 +214,7 @@ class PDFProcessor:
         couleur_rouge = (0.8, 0, 0)
         
         # 1. Section Règlement
-        total_ht = montants.get('total_ht')+2000
+        total_ht = montants.get('total_ht')+forfait_pose
         total_TVA = total_ht*tva
         
         total_ttc=total_TVA+total_ht
@@ -227,7 +227,7 @@ class PDFProcessor:
         page.insert_text((x_gauche+2, y_current+23), "- Les finitions extérieures et non intérieures", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
         page.insert_text((x_gauche+2, y_current+33), "- L'arrivée électrique est à mettre en place par le client", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
         page.insert_text((x_gauche+420, y_current+33), "1", fontsize=9, fontname="Helvetica", color=(0, 0, 0))
-        page.insert_text((x_gauche+500, y_current+33), f"2000,00 \x80", fontsize=9, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((x_gauche+500, y_current+33), f"{forfait_pose:.2f} \x80", fontsize=9, fontname="Helvetica", color=(0, 0, 0))
 
         page.insert_text((x_gauche+2, y_current+43), " **SOUS RESERVE DE VISITE TECHNIQUE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
 
@@ -332,7 +332,8 @@ def personnaliser_devis_pdf(
     Date="04/06/2025",
     numero_devis=344333,
     code_client=7658765,
-    tva=0.055
+    tva=0.055,
+    forfait_pose=2000
 ):
     processor = PDFProcessor()
     logo_quali = "quali.png"
@@ -429,10 +430,10 @@ def personnaliser_devis_pdf(
         
         # Créer le nouveau tableau
         y_position = zone_a_supprimer.y0 + 10
-        processor.creer_tableau_recapitulatif(last_page, montants, y_position,accompte1,accompte2,solde,tva)
+        processor.creer_tableau_recapitulatif(last_page, montants, y_position,accompte1,accompte2,solde,tva,forfait_pose)
     else:
         print("⚠️ Zone de suppression non trouvée, création du tableau en bas de page")
-        processor.creer_tableau_recapitulatif(last_page, montants, 500,accompte1,accompte2,solde,tva)
+        processor.creer_tableau_recapitulatif(last_page, montants, 500,accompte1,accompte2,solde,tva,forfait_pose)
     
     # Enregistrement
     doc.save(output_pdf_path)
@@ -459,7 +460,8 @@ if __name__ == "__main__":
         date_validite="16/06/2025",
         Date="04/06/2025",
         numero_devis=344333,
-        code_client=7658765
+        code_client=7658765,
+        forfait_pose=2000
     )
     
     print("\n=== RÉSUMÉ DES MONTANTS DÉTECTÉS ===")
