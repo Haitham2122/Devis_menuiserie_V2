@@ -214,9 +214,25 @@ class PDFProcessor:
         couleur_rouge = (0.8, 0, 0)
         
         # 1. Section Règlement
-        total_TVA = montants.get('total_ht', 0)*tva
-        total_ht = montants.get('total_ht')
+        total_ht = montants.get('total_ht')+2000
+        total_TVA = total_ht*tva
+        
         total_ttc=total_TVA+total_ht
+
+
+        ligne_zone_ = fitz.Rect(x_gauche, y_current-8, x_droite, y_current-7)
+        page.draw_rect(ligne_zone_, fill=(0, 0,0), color=None)
+        page.insert_text((x_gauche, y_current+3), " FORFAIT POSE", fontsize=9, fontname="Helvetica-Bold", color=(0, 0, 0))
+        page.insert_text((x_gauche+2, y_current+13), "Le forfait pose comprends :", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((x_gauche+2, y_current+23), "- Les finitions extérieures et non intérieures", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((x_gauche+2, y_current+33), "- L'arrivée électrique est à mettre en place par le client", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((x_gauche+420, y_current+33), "1", fontsize=9, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((x_gauche+500, y_current+33), f"2000,00 \x80", fontsize=9, fontname="Helvetica", color=(0, 0, 0))
+
+        page.insert_text((x_gauche+2, y_current+43), " **SOUS RESERVE DE VISITE TECHNIQUE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+
+
+        y_current=y_current+60
 
         rect_reglement = fitz.Rect(x_gauche, y_current, x_droite, y_current + 60)
         page.draw_rect(rect_reglement, color=couleur_noir, width=1)
