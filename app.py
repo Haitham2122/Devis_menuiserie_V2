@@ -537,6 +537,20 @@ async def interface_principale():
                 background: #f0f9ff;
             }
             
+            .form-file.file-selected {
+                border-color: #059669;
+                background: #f0fdf4;
+            }
+            
+            .form-file.file-selected .file-icon {
+                color: #059669;
+            }
+            
+            .form-file.file-selected .file-text {
+                color: #047857;
+                font-weight: 600;
+            }
+            
             .form-file input {
                 position: absolute;
                 inset: 0;
@@ -779,13 +793,13 @@ async def interface_principale():
                             <div class="section-title">Document PDF</div>
                         </div>
                         
-                        <div class="form-file">
-                            <input type="file" name="pdf_file" accept=".pdf" required>
-                            <div class="file-icon">
+                        <div class="form-file" id="fileDropZone">
+                            <input type="file" name="pdf_file" accept=".pdf" required id="pdfFileInput">
+                            <div class="file-icon" id="fileIcon">
                                 <i class="fas fa-file-pdf"></i>
                             </div>
-                            <div class="file-text">Sélectionner le devis PDF</div>
-                            <div class="file-subtext">Glissez-déposez ou cliquez pour parcourir</div>
+                            <div class="file-text" id="fileText">Sélectionner le devis PDF</div>
+                            <div class="file-subtext" id="fileSubtext">Glissez-déposez ou cliquez pour parcourir</div>
                         </div>
                         
                         <div class="info-box">
@@ -1167,6 +1181,65 @@ async def interface_principale():
                 document.getElementById('loadingCard').style.display = 'none';
                 document.getElementById('successCard').style.display = 'none';
                 document.getElementById('errorCard').style.display = 'none';
+            }
+
+            // Handle file selection and drag & drop
+            const fileInput = document.getElementById('pdfFileInput');
+            const dropZone = document.getElementById('fileDropZone');
+            const fileIcon = document.getElementById('fileIcon');
+            const fileText = document.getElementById('fileText');
+            const fileSubtext = document.getElementById('fileSubtext');
+
+            // Handle file selection
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    updateFileDisplay(file);
+                }
+            });
+
+            // Handle drag and drop
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.style.borderColor = '#3b82f6';
+                dropZone.style.background = '#f0f9ff';
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                if (!dropZone.classList.contains('file-selected')) {
+                    dropZone.style.borderColor = '#cbd5e1';
+                    dropZone.style.background = '#f8fafc';
+                }
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type === 'application/pdf') {
+                        fileInput.files = files;
+                        updateFileDisplay(file);
+                    } else {
+                        alert('Veuillez sélectionner un fichier PDF');
+                    }
+                }
+            });
+
+            function updateFileDisplay(file) {
+                // Ajouter la classe pour l'état sélectionné
+                dropZone.classList.add('file-selected');
+                
+                // Mettre à jour l'icône
+                fileIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                
+                // Afficher le nom du fichier
+                fileText.textContent = file.name;
+                
+                // Afficher la taille du fichier
+                const fileSize = (file.size / 1024 / 1024).toFixed(2); // en MB
+                fileSubtext.innerHTML = `<i class="fas fa-check"></i> Fichier sélectionné (${fileSize} MB)`;
             }
 
             // Initialize

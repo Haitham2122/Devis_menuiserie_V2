@@ -100,7 +100,7 @@ class PDFProcessor:
         
         for block in text_dict["blocks"]:
             #print(block)
-            print('----------------------')
+            #print('----------------------')
             if "lines" in block:
                 for line in block["lines"]:
                     for span in line["spans"]:
@@ -108,7 +108,7 @@ class PDFProcessor:
                             
                         text = span["text"].strip()
                         #print(text)
-                        print('---------------')
+                        #print('---------------')
                         
                         # Chercher le début
                         if "Total Accessoires:" in text or "Total calcule:" in text:
@@ -129,7 +129,7 @@ class PDFProcessor:
         if debut_trouve and y_debut is not None:
             # Si on n'a pas trouvé la fin, prendre une zone par défaut
             if y_fin is None:
-                y_fin = y_debut + 200
+                y_fin = y_debut + 180
             
             # Zone de suppression avec marges
             zone_suppression = fitz.Rect(20, y_debut - 10, 585, y_fin)
@@ -150,7 +150,7 @@ class PDFProcessor:
         
         for block in text_dict["blocks"]:
             #print(block)
-            print('----------------------')
+            #print('----------------------')
             if "lines" in block:
                 for line in block["lines"]:
                     for span in line["spans"]:
@@ -158,7 +158,7 @@ class PDFProcessor:
                             
                         text = span["text"].strip()
                         
-                        print('---------------')
+                        #print('---------------')
                         #y_debut = span["bbox"][0]  # y0
                         #print(span,y_debut)
                         # Chercher le début
@@ -193,10 +193,10 @@ class PDFProcessor:
         
         return None
     
-    def creer_tableau_recapitulatif(self, page, montants, y_position,accompt1,accompt2,solde,tva,forfait_pose):
+    def creer_tableau_recapitulatif(self, doc, page, montants, y_position,accompt1,accompt2,solde,tva,forfait_pose):
         """Crée le nouveau tableau de récapitulatif"""
         if not montants:
-            return
+            return page
         
         # Dimensions du tableau
         x_gauche = 30
@@ -219,7 +219,30 @@ class PDFProcessor:
         
         total_ttc=total_TVA+total_ht
 
-
+        print('y_current pose forfait  : ******************************',y_current)
+        
+        # 1ère vérification : si y_current + 60 > 760, créer nouvelle page
+        if y_current + 60 > 750:
+            # Créer une nouvelle page
+            page = doc.new_page()
+            
+            # Copier le footer vers la nouvelle page
+            ligne_zone = fitz.Rect(30, 760, 570, 804)
+            page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
+            page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            
+            ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
+            page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
+            page.insert_image(fitz.Rect(30, 753, 1066, 803), filename="quali.png")
+            
+            ligne_zone_certificat = fitz.Rect(430, 789, 525, 801)
+            page.draw_rect(ligne_zone_certificat, fill=(4/255, 138/255, 211/255), color=None)
+            page.insert_text((430, 797), "Certificat N° E-E210179 ", fontsize=8, fontname="Helvetica", color=(1, 1, 1))
+            
+            # Réinitialiser la position Y pour la nouvelle page
+            y_current = 50
+        
         ligne_zone_ = fitz.Rect(x_gauche, y_current-8, x_droite, y_current-7)
         page.draw_rect(ligne_zone_, fill=(0, 0,0), color=None)
         page.insert_text((x_gauche, y_current+3), " FORFAIT POSE", fontsize=9, fontname="Helvetica-Bold", color=(0, 0, 0))
@@ -231,8 +254,30 @@ class PDFProcessor:
 
         page.insert_text((x_gauche+2, y_current+43), " **SOUS RESERVE DE VISITE TECHNIQUE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
 
+#--------------------------------------------------------------REGLEMENT------------------------------------------------------------------
+        y_current=y_current+50
 
-        y_current=y_current+60
+        if y_current + 155 > 750:
+            # Créer une nouvelle page
+            page = doc.new_page()
+            
+            # Copier le footer vers la nouvelle page
+            ligne_zone = fitz.Rect(30, 760, 570, 804)
+            page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
+            page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            
+            ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
+            page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
+            page.insert_image(fitz.Rect(30, 753, 1066, 803), filename="quali.png")
+            
+            ligne_zone_certificat = fitz.Rect(430, 789, 525, 801)
+            page.draw_rect(ligne_zone_certificat, fill=(4/255, 138/255, 211/255), color=None)
+            page.insert_text((430, 797), "Certificat N° E-E210179 ", fontsize=8, fontname="Helvetica", color=(1, 1, 1))
+            
+            # Réinitialiser la position Y pour la nouvelle page
+            y_current = 50
+
 
         rect_reglement = fitz.Rect(x_gauche, y_current, x_droite, y_current + 60)
         page.draw_rect(rect_reglement, color=couleur_noir, width=1)
@@ -250,7 +295,7 @@ class PDFProcessor:
         
         # 2. Section totaux à droite
         x_totaux = x_droite - 200
-        rect_totaux = fitz.Rect(x_totaux, y_current, x_droite, y_current + 80)
+        rect_totaux = fitz.Rect(x_totaux, y_current, x_droite, y_current + 72)
         page.draw_rect(rect_totaux, color=couleur_noir, width=1, fill=couleur_gris_clair)
 
 
@@ -266,13 +311,38 @@ class PDFProcessor:
         page.insert_text((x_totaux + 120, y_current + 42), f"{total_TVA:.2f} \x80", fontsize=10, fontname="Helvetica-Bold")
         
         # Total TTC
-        rect_ttc = fitz.Rect(x_totaux, y_current + 50, x_droite, y_current + 80)
+        rect_ttc = fitz.Rect(x_totaux, y_current + 50, x_droite, y_current + 72)
         page.draw_rect(rect_ttc, fill=couleur_gris_fonce)
         page.insert_text((x_totaux + 5, y_current + 65), "Total TTC :", fontsize=12, fontname="Helvetica-Bold")
         page.insert_text((x_totaux + 120, y_current + 65), f"{total_TVA+total_ht:.2f} \x80", fontsize=12, fontname="Helvetica-Bold")
-        
+        print('y_current : ******************************',y_current)
         y_current += 90
+        print('y_current : ******************************',y_current)
         
+        # 2ème vérification : si y_current + 90 > 760, créer nouvelle page
+        if y_current + 130 > 750:
+            # Créer une nouvelle page
+            page = doc.new_page()
+            
+            # Copier le footer vers la nouvelle page
+            ligne_zone = fitz.Rect(30, 760, 570, 804)
+            page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
+            page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            
+            ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
+            page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
+            page.insert_image(fitz.Rect(30, 753, 1066, 803), filename="quali.png")
+            
+            ligne_zone_certificat = fitz.Rect(430, 789, 525, 801)
+            page.draw_rect(ligne_zone_certificat, fill=(4/255, 138/255, 211/255), color=None)
+            page.insert_text((430, 797), "Certificat N° E-E210179 ", fontsize=8, fontname="Helvetica", color=(1, 1, 1))
+            
+            # Réinitialiser la position Y pour la nouvelle page
+            y_current = 50
+        
+        #-------------------------------------------------------------------------------------------------------------------------------
+
         # 3. Informations complémentaires
         rect_info = fitz.Rect(x_gauche, y_current, x_droite, y_current + 40)
         page.draw_rect(rect_info, color=couleur_noir, width=1, fill=(1, 0.9, 0.9))
@@ -311,7 +381,8 @@ class PDFProcessor:
                       fitz.Point(x_gauche + col_width, y_current + 40), width=1)
         page.draw_line(fitz.Point(x_gauche + 2*col_width, y_current), 
                       fitz.Point(x_gauche + 2*col_width, y_current + 40), width=1)
-#
+        
+        return page
 
 def personnaliser_devis_pdf(
     input_pdf_path,
@@ -430,10 +501,10 @@ def personnaliser_devis_pdf(
         
         # Créer le nouveau tableau
         y_position = zone_a_supprimer.y0 + 10
-        processor.creer_tableau_recapitulatif(last_page, montants, y_position,accompte1,accompte2,solde,tva,forfait_pose)
+        last_page = processor.creer_tableau_recapitulatif(doc, last_page, montants, y_position,accompte1,accompte2,solde,tva,forfait_pose)
     else:
         print("⚠️ Zone de suppression non trouvée, création du tableau en bas de page")
-        processor.creer_tableau_recapitulatif(last_page, montants, 500,accompte1,accompte2,solde,tva,forfait_pose)
+        last_page = processor.creer_tableau_recapitulatif(doc, last_page, montants, 500,accompte1,accompte2,solde,tva,forfait_pose)
     
     # Enregistrement
     doc.save(output_pdf_path)
