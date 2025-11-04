@@ -230,7 +230,7 @@ class PDFProcessor:
             ligne_zone = fitz.Rect(30, 760, 570, 804)
             page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
             page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
-            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse :  304 Rue Garibaldi 69007 Lyon ", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
             
             ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
             page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
@@ -265,7 +265,7 @@ class PDFProcessor:
             ligne_zone = fitz.Rect(30, 760, 570, 804)
             page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
             page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
-            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse :  304 Rue Garibaldi 69007 Lyon ", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
             
             ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
             page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
@@ -328,7 +328,7 @@ class PDFProcessor:
             ligne_zone = fitz.Rect(30, 760, 570, 804)
             page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
             page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
-            page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+            page.insert_text((140, 785), "Adresse :  304 Rue Garibaldi 69007 Lyon ", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
             
             ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
             page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
@@ -389,8 +389,8 @@ def personnaliser_devis_pdf(
     output_pdf_path,
     logo_path,
     nom_client="Nom prénom",
-    adresse_client="885 BOULEVARD DES PRINCES",
-    ville_client="06210 MANDELIEU-LA-NAPOULE",
+    adresse_client="304 Rue Garibaldi",
+    ville_client="69007 Lyon ",
     societe_pose="FERMETURE SABOT",
     representant_pose="Boufedji selim",
     siret_pose="934 496 985",
@@ -432,13 +432,32 @@ def personnaliser_devis_pdf(
     for page in doc:
         # Pied de page standard
         page.add_redact_annot(fitz.Rect(20, 760, 570, 800), fill=(1, 1, 1))
+        
+        # Remplacement texte simple: "ADF Optim" -> "FSM Optim"
+        # 1) Rechercher toutes les occurrences (insensible à la casse)
+        old_text = "ADF Optim"
+        new_text = "FSM Optim"
+        _replace_rects = []
+        try:
+            hits = page.search_for(old_text, flags=fitz.TEXT_IGNORECASE)
+        except Exception:
+            hits = []
+        for rect in hits:
+            # Ajouter une redaction avec une petite marge pour couvrir le texte existant
+            margin = 0.5
+            red_rect = fitz.Rect(rect.x0 - margin, rect.y0 - margin, rect.x1 + margin, rect.y1 + margin)
+            page.add_redact_annot(red_rect, fill=(1, 1, 1))
+            # Garder un rectangle légèrement agrandi pour la réinsertion
+            _replace_rects.append(red_rect)
+
+        # Appliquer toutes les redactions (pied de page + remplacements)
         page.apply_redactions()
         
         # Footer personnalisé
         ligne_zone = fitz.Rect(30, 760, 570, 804)
         page.draw_rect(ligne_zone, fill=(238/255, 238/255, 238/255), color=None)
         page.insert_text((38, 785), "SIRET : 94366500000015", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
-        page.insert_text((140, 785), "Adresse : 885 BOULEVARD DES PRINCES, 06210 MANDELIEU-LA-NAPOULE", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
+        page.insert_text((140, 785), "Adresse :  304 Rue Garibaldi 69007 Lyon ", fontsize=8, fontname="Helvetica", color=(0, 0, 0))
         
         ligne_zone_1 = fitz.Rect(30, 804, 570, 805)
         page.draw_rect(ligne_zone_1, fill=(90/255, 177/255, 235/255), color=None)
@@ -448,6 +467,21 @@ def personnaliser_devis_pdf(
         page.draw_rect(ligne_zone_certificat, fill=(4/255, 138/255, 211/255), color=None)
         page.insert_text((430, 797), f"Certificat N° {certificat_rge} ", fontsize=8, fontname="Helvetica", color=(1, 1, 1))
         #trouver_zone_entete(page)
+
+        # 2) Réinsérer le nouveau texte aux mêmes emplacements
+        for rect in _replace_rects:
+            # Adapter la taille de police à la hauteur disponible
+            rect_height = max(1.0, rect.y1 - rect.y0)
+            font_size = max(6, min(12, rect_height * 0.85))
+            page.insert_textbox(
+                rect,
+                new_text,
+                fontsize=font_size,
+                fontname="Helvetica",
+                color=(0, 0, 0),
+                align=fitz.TEXT_ALIGN_LEFT
+            )
+
         processor.trouver_zone_entete(page)
         
     
@@ -459,8 +493,8 @@ def personnaliser_devis_pdf(
     page1.draw_rect(rect_zone_2, fill=(238/255, 238/255, 238/255), color=None)
     
     #page1.insert_text((32, 110), "Fenêtre sur le monde", fontsize=14, fontname="Helvetica-Bold", color=(0, 0, 0))
-    page1.insert_text((32, 135), "885 BOULEVARD DES PRINCES", fontsize=10, fontname="Helvetica-Bold")
-    page1.insert_text((32, 150), "06210 MANDELIEU-LA-NAPOULE", fontsize=10, fontname="Helvetica-Bold")
+    page1.insert_text((32, 135), "304 Rue Garibaldi", fontsize=10, fontname="Helvetica-Bold")
+    page1.insert_text((32, 150), "69007 Lyon ", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 165), "Tél. : 06 50 79 75 37", fontsize=10, fontname="Helvetica-Bold")
     page1.insert_text((32, 180), "E-mail : contact@fenetremonde.com", fontsize=10, fontname="Helvetica-Bold")
     rect_info = fitz.Rect(30, 120, 570, 190)

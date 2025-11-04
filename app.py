@@ -66,6 +66,8 @@ async def create_societe(
     try:
         nouvelle_societe = societes_manager.add_societe(nom, representant, siret, certificat_rge, date_attribution, date_validite)
         return {"success": True, "societe": nouvelle_societe, "message": "Société créée avec succès"}
+    except RuntimeError as e:
+        raise HTTPException(status_code=501, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la création : {str(e)}")
 
@@ -80,18 +82,24 @@ async def update_societe(
     date_validite: str = Form(...)
 ):
     """Met à jour une société"""
-    societe_updated = societes_manager.update_societe(societe_id, nom, representant, siret, certificat_rge, date_attribution, date_validite)
-    if not societe_updated:
-        raise HTTPException(status_code=404, detail="Société non trouvée")
-    return {"success": True, "societe": societe_updated, "message": "Société mise à jour avec succès"}
+    try:
+        societe_updated = societes_manager.update_societe(societe_id, nom, representant, siret, certificat_rge, date_attribution, date_validite)
+        if not societe_updated:
+            raise HTTPException(status_code=404, detail="Société non trouvée")
+        return {"success": True, "societe": societe_updated, "message": "Société mise à jour avec succès"}
+    except RuntimeError as e:
+        raise HTTPException(status_code=501, detail=str(e))
 
 @app.delete("/api/societes/{societe_id}")
 async def delete_societe(societe_id: int):
     """Supprime une société"""
-    success = societes_manager.delete_societe(societe_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Société non trouvée")
-    return {"success": True, "message": "Société supprimée avec succès"}
+    try:
+        success = societes_manager.delete_societe(societe_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Société non trouvée")
+        return {"success": True, "message": "Société supprimée avec succès"}
+    except RuntimeError as e:
+        raise HTTPException(status_code=501, detail=str(e))
 
 @app.get("/societes", response_class=HTMLResponse)
 async def gestion_societes():
@@ -963,6 +971,7 @@ async def interface_principale():
                             <select class="form-select" name="tva" required>
                                 <option value="0.055">5.5% - Travaux de rénovation énergétique</option>
                                 <option value="0.00">0% - Exonération de TVA</option>
+                                <option value="0.20">20% - Taux normal</option>
                             </select>
                         </div>
                         
